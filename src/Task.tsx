@@ -4,7 +4,7 @@ import './index.css'
 
 
 export type TaskData = {
-  id: number,
+  id: Number,
   title: String
   description: String
   check: Boolean
