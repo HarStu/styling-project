@@ -1,5 +1,4 @@
 import './Index.css'
-import { useState } from 'react'
 import clsx from 'clsx'
 
 type User = {
@@ -72,11 +71,16 @@ const message_thread: MessageThread = {
     },
     {
       msg_id: 6,
+      sender_id: 1,
+      content: "I'm so serious -- Who up throwing they aegis reflector? Who up throwing they aegis reflector? Who up throwing they aegis reflector? Who up throwing they aegis reflector? Who up throwing they aegis reflector? Who up throwing they aegis reflector? Who up throwing they aegis reflector?"
+    },
+    {
+      msg_id: 7,
       sender_id: 2,
       content: "It's for real. Imagine not having a built-in unblockable. This post brought to you by SA3 DENJIN gang"
     },
     {
-      msg_id: 7,
+      msg_id: 8,
       sender_id: 2,
       content: "LOCK IN. LISTEN. Imagine not having a built-in unblockable. This post brought to you by SA3 DENJIN gang"
     },
@@ -96,7 +100,7 @@ function Message({ msgId, isUser, pfp_url, content, sender, sameTop, sameBottom 
   const baseMessageClass = "flex flex-row justify-end";
   const otherMessageClass = "justify-end flex-row-reverse";
 
-  const baseContentClass = "mb-1 items-center p-3 font-[Inter] text-xs max-w-5/6";
+  const baseContentClass = "mb-1 items-center p-3 font-[Inter] font-md text-xs max-w-5/6";
   const userContentClass = "bg-bgBlue";
   const otherContentClass = "bg-bgGray";
 
@@ -126,46 +130,32 @@ function Message({ msgId, isUser, pfp_url, content, sender, sameTop, sameBottom 
 }
 
 export function MessageThread() {
-  const generateMessageProps = (message_thread: MessageThread) => {
-    // values I need to get to complete a message:
-    //  - isUser (does message_thread.content[i].id === message_thread.user_id?)
-    //  - pfp_url (search in 'participants' for associated id)
-    //  - content ()
-    //  - sender
-    //  - sameTop (does message_thread.content[i-1].id === message_thread.user_id? always FALSE on the first one)
-    //  - sameBottom (does message_thread.content[i+1].id === message_thread.user_id? always FALSE on the last one)
 
-    const messagePropsList: MessageProps[] = message_thread.messages.map((message, i) => {
-      const messageProps: Partial<MessageProps> = {};
-      messageProps.msgId = message.msg_id;
-      messageProps.isUser = message.sender_id === message_thread.user_id;
-      messageProps.content = message.content;
-      messageProps.sender = message.sender_id;
-      const participant = message_thread.participants.find((user) => user.id === message.sender_id)
-      if (participant === undefined) {
-        throw new Error('Message unassociated with any user found in thread')
-      } else {
-        messageProps.pfp_url = participant.pfp_url
-      }
-      if (i !== 0) {
-        messageProps.sameTop = message_thread.messages[i - 1].sender_id === messageProps.sender;
-        console.log(`checking sameTop for ${message.msg_id}: prev ${message_thread.messages[i - 1].sender_id} === current ${messageProps.sender}: $PmessageProps.sameTop`)
-      } else {
-        messageProps.sameTop = false;
-      }
-      if (i < message_thread.messages.length - 1) {
-        messageProps.sameBottom = message_thread.messages[i + 1].sender_id === messageProps.sender;
-      } else {
-        messageProps.sameBottom = false;
-      }
-      return messageProps
-    })
-    return messagePropsList;
+  const getPfpUrl = (participants: User[], sender_id: number) => {
+    const match = participants.find((user) => user.id === sender_id)
+    if (match === undefined) {
+      throw new Error('Message unassociated with any user found in thread')
+    } else {
+      return match.pfp_url
+    }
   }
 
   return (
     <div className="flex flex-col">
-      {generateMessageProps(message_thread).map((mp) => <Message key={mp.msgId} msgId={mp.msgId} isUser={mp.isUser} pfp_url={mp.pfp_url} content={mp.content} sender={mp.sender} sameTop={mp.sameTop} sameBottom={mp.sameBottom} />)}
+      {message_thread.messages.map((message, idx, messageList) => {
+
+        const props: MessageProps = {
+          msgId: message.msg_id,
+          isUser: message.sender_id === message_thread.user_id,
+          pfp_url: getPfpUrl(message_thread.participants, message.sender_id),
+          content: message.content,
+          sender: message.sender_id,
+          sameTop: (idx !== 0 ? messageList[idx - 1].sender_id === message.sender_id : false),
+          sameBottom: (idx < messageList.length - 1 ? message_thread.messages[idx + 1].sender_id === message.sender_id : false)
+        }
+
+        return <Message {...props} />
+      })}
     </div>
   )
 }
