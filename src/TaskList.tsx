@@ -1,15 +1,43 @@
 import { useState } from 'react'
-import clsx from 'clsx'
 import './index.css'
 
 import { Task } from './Task.tsx'
 import type { TaskData } from './Task.tsx'
 
-type TaskListProps = { 
-  tasks: TaskData[] 
-  toggleFunc: Function
-}
-export function TaskList({ tasks, toggleFunc } : TaskListProps) {
+const initialTaskList: TaskData[] = [
+  {
+    id: 1,
+    title: "Sweep the Kitchen",
+    description: "Get under the cabinets, do a good job",
+    check: true
+  },
+  {
+    id: 2,
+    title: "Make Dinner",
+    description: "Maybe chickpea curry tonight?",
+    check: false
+  },
+  {
+    id: 3,
+    title: "Walk the Dog",
+    description: "You need the exercise too",
+    check: false
+  },
+]
+
+export function TaskList() {
+  const [taskList, setTaskList] = useState(initialTaskList)
+
+  const toggleCheck = (id: number) => {
+    const nextTaskList = structuredClone(taskList)
+    for (let task of nextTaskList) {
+      if (task.id === id) {
+        task.check = !task.check;
+      }
+    }
+    setTaskList(nextTaskList)
+  }
+
   const completedCompare = (a: TaskData, b: TaskData) => {
     if (a.check && !b.check) {
       return 1
@@ -20,12 +48,12 @@ export function TaskList({ tasks, toggleFunc } : TaskListProps) {
     }
   }
 
-  const sortedTasks = tasks.sort(completedCompare)
+  const sortedTasks = taskList.sort(completedCompare)
 
   return (
     <div className="space-y-4">
       {sortedTasks.map(taskData =>
-        <Task taskData={taskData} toggleFunc={() => toggleFunc(taskData.id)} />
+        <Task key={taskData.id} taskData={taskData} toggleFunc={() => toggleCheck(taskData.id)} />
       )}
     </div>
   )
