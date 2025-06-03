@@ -52,16 +52,16 @@ export function Post() {
             <span>
               {post.user.name}
             </span>
-            <span className="text-textGray">
+            <span className="text-textGray font-light">
               {" in " + post.content.group}
             </span>
           </div>
-          <div className="text-textGray">
+          <div className="text-textGray font-light">
             {dateDif(post.content.timestamp)}
           </div>
         </div>
         <img className="aspect-square object-cover rounded my-4" src={post.content.img_url} alt="content" />
-        <div className="text-lg">
+        <div className="text-lg font-light mb-4">
           {post.content.description}
         </div>
         <div className="text-sm flex gap-2 flex-row">
