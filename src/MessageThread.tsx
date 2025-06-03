@@ -4,7 +4,7 @@ import clsx from 'clsx'
 type User = {
   id: number,
   name: String,
-  pfp_url: String
+  pfp_url: string
 }
 
 type UserMessage = {
@@ -90,7 +90,7 @@ const message_thread: MessageThread = {
 type MessageProps = {
   msgId: number
   isUser: Boolean
-  pfp_url: String
+  pfp_url: string
   content: String
   sender: Number
   sameTop: Boolean
